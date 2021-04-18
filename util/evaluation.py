@@ -7,9 +7,10 @@ import os
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
+
 class MMD:  # class to compute MMD between two distributions
 
-    def __init__(self, mode,use_torch):
+    def __init__(self, mode, use_torch):
         #  mode: 'avg' or 'joint', 'avg' computes the frame-average MMD, 'joint' regard a sequence as joint distribution
         self.mode = mode
         self.use_torch = use_torch
@@ -17,7 +18,8 @@ class MMD:  # class to compute MMD between two distributions
     def reset(self, new_mode):  # reset the status of MMD
         self.mode = new_mode
 
-    def rkhs_mmd(self, samples_1, samples_2, bandwidth):  # two given sample groups, shape (N*dim)
+    # two given sample groups, shape (N*dim)
+    def rkhs_mmd(self, samples_1, samples_2, bandwidth):
         if self.use_torch:
             m, dim = samples_1.size()
             n, _ = samples_2.size()
@@ -49,7 +51,8 @@ class MMD:  # class to compute MMD between two distributions
             mmd_ = np.sqrt(np.sum(hxy - np.diag(np.diag(hxy)))/(m*(m-1)))
             return mmd_
 
-    def compute_sequence_mmd(self, sequence_1, sequence_2, bandwidth):  # compute the mmd between sequences, shape (N*len*dim)
+    # compute the mmd between sequences, shape (N*len*dim)
+    def compute_sequence_mmd(self, sequence_1, sequence_2, bandwidth):
         if self.use_torch:
             _, seq_len, dim = sequence_1.size()
         else:
@@ -57,7 +60,8 @@ class MMD:  # class to compute MMD between two distributions
         result = 0.
         if self.mode == 'avg':
             for frames in range(seq_len):
-                result += self.rkhs_mmd(sequence_1[:, frames, :], sequence_2[:, frames, :], bandwidth)/seq_len
+                result += self.rkhs_mmd(sequence_1[:, frames, :],
+                                        sequence_2[:, frames, :], bandwidth)/seq_len
         elif self.mode == 'joint':
             if self.use_torch:
                 flat_seq_1 = sequence_1.view(-1, dim*seq_len)
@@ -71,7 +75,7 @@ class MMD:  # class to compute MMD between two distributions
         return result
 
 
-def calcualte_mmd(gen,real,label):
+def calcualte_mmd(gen, real, label):
     use_torch = 0
     class_num = np.shape(label)[-1]
     gen_data_list = [[] for i in range(class_num)]
@@ -107,11 +111,12 @@ def calcualte_mmd(gen,real,label):
     avg = 0
 
     mode = "joint"
-    compute_mmd = MMD(mode,use_torch)
+    compute_mmd = MMD(mode, use_torch)
     # for i in tqdm(range(len(gen)), total=len(gen)):
     for i in range(len(gen)):
         cl = np.argmax(label[i])
-        if len(gen_data_list[cl]) < 2000:  # NOTE: joint mode can not afford to large matrix
+        # NOTE: joint mode can not afford to large matrix
+        if len(gen_data_list[cl]) < 2000:
             gen_data_list[cl].append(gen[i])
             real_data_list[cl].append(real[i])
 
@@ -124,8 +129,9 @@ def calcualte_mmd(gen,real,label):
             new_gen = torch.tensor(new_gen).cuda()
             new_real = torch.tensor(new_real).cuda()
         # for j in tqdm(range(-4, 10), total=14):
-        for j in range(-4,10):
-            new_new_r = compute_mmd.compute_sequence_mmd(new_gen, new_real, 10 ** j)
+        for j in range(-4, 10):
+            new_new_r = compute_mmd.compute_sequence_mmd(
+                new_gen, new_real, 10 ** j)
             if new_new_r > new_r:
                 new_r = new_new_r
         # print(new_r)
@@ -134,10 +140,7 @@ def calcualte_mmd(gen,real,label):
         torch.cuda.empty_cache()
     joint = np.mean(result_list)
 
-
-
-    return avg,joint
-
+    return avg, joint
 
 
 # path = input('Input the path containing the result data: ')
