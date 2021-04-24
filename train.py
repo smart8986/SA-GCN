@@ -165,8 +165,8 @@ def pre_data():
 def bp_v(inputs, label, label_num, y, retain=False):
     y_label = y * torch.ones(batch_size).to(device).type(torch.float32)
     label_v = label.unsqueeze(1).repeat(1, opt.seq_length, 1)
-    outputs, output2 = dis_v(inputs, label_v)
-    err = criterion(outputs, y_label)+criterion_c(output2, label_num)
+    outputs, outputs2 = dis_v(inputs, label_v)
+    err = criterion(outputs, y_label) + criterion_c(outputs2, label_num)
     err.backward(retain_graph=retain)
     return err.item()
 
@@ -264,9 +264,9 @@ for epoch in range(1, n_iter + 1):
             #torch.save(gen.state_dict(), './ckpt/%.4fgen.pt' % (joint))
             #torch.save(dis_i.state_dict(), './ckpt/%.4fdisi.pt' % (joint))
             #torch.save(dis_i.state_dict(), './ckpt/%.4fdisv.pt' % (joint))
-            torch.save(gen.state_dict(), './ckpt/%04dgen.pt' % (joint))
-            torch.save(dis_v.state_dict(), './ckpt/%04ddisv.pt' % (joint))
-            torch.save(dis_i.state_dict(), './ckpt/%04ddisi.pt' % (joint))
+            torch.save(gen.state_dict(), '/content/drive/MyDrive/DeepLearningModels/SA-GCN/ckpt/%04fgen.pt' % (joint))
+            torch.save(dis_v.state_dict(), '/content/drive/MyDrive/DeepLearningModels/SA-GCN/ckpt/%04fdisv.pt' % (joint))
+            torch.save(dis_i.state_dict(), '/content/drive/MyDrive/DeepLearningModels/SA-GCN/ckpt/%04fdisi.pt' % (joint))
 
             ''' generate video '''
             if epoch > 300000:

@@ -76,7 +76,7 @@ class Discriminator_V(nn.Module):
         o1 = self.linear2(x).squeeze()
         o1 = self.activate(o1)
         o2 = self.linear3(x).squeeze()
-        o2 = self.activate1(o2)
+        # o2 = self.activate1(o2)
         return o1, o2
 
 
