@@ -34,7 +34,7 @@ parser.add_argument('-vec_length', type=int, default=30)
 parser.add_argument('-tmp_dir', type=str, default='tmp/')
 parser.add_argument('-video_dir', type=str, default='video/')
 parser.add_argument('-lr', type=float, default=0.0002)
-parser.add_argument('-model_save_path', type=str, default='/content/drive/MyDrive/DeepLearningModels/SA-GCN/ckpt/')
+parser.add_argument('-model_save_path', type=str, default='./')
 parser.add_argument('--cuda', type=int, default=1,
                     help='set -1 when you use cpu')
 parser.add_argument('--niter', type=int, default=100000,
