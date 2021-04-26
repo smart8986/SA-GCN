@@ -247,7 +247,7 @@ for epoch in range(1, n_iter + 1):
     g_loss = err_gv + err_gi
     print('[%d/%d] d_loss:%.4f g_loss:%.4f' %
           (epoch, n_iter, d_loss, g_loss))
-    if epoch % 20 == 0:
+    if epoch % 200 == 0:
         # print(test_sum)
         test_sum = 0
         gen.eval()
